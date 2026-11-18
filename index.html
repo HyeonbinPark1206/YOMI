@@ -1,0 +1,1168 @@
+<!doctype html>
+<html lang="ko" data-lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YOMI</title>
+<meta name="description" content="예비교사가 실제 아이와 대화하듯 수업을 연습하는 AI 로봇 YOMI · 팀 4IU, 동아대학교 컴퓨터공학과 2025 졸업작품">
+<meta property="og:title" content="YOMI">
+<meta property="og:description" content="예비교사가 실제 아이와 대화하듯 수업을 연습하는 AI 로봇">
+<meta property="og:image" content="https://hyeonbinpark1206.github.io/YOMI/assets/hero.jpg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+/* 웹: 세로로 자연스럽게 이어지는 한 페이지. html.export 클래스가 붙으면 섹션 하나 = 16:9 슬라이드 한 장 (PPT 캡처용) */
+:root{--bg:#fbf4ec;--slide:#fbf4ec;--ink:#2f241e;--muted:#80695c;--accent:#e26f43;--line:#efdccd;--soft:#f7efe8;--band:#f5e9dd}
+*{box-sizing:border-box}
+html[data-lang=ko] .en,html[data-lang=en] .ko{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Segoe UI","Noto Sans KR",sans-serif;-webkit-font-smoothing:antialiased;word-break:keep-all}
+img,video{display:block;max-width:100%}
+
+/* 상단 바 (슬라이드 밖) */
+.top{display:flex;align-items:center;justify-content:space-between;max-width:1600px;margin:0 auto;padding:16px 20px}
+.logo{font-weight:900;font-size:20px;letter-spacing:1px}.logo b{color:var(--accent)}
+.lang{display:flex;gap:2px}.lang button{border:0;background:none;font:inherit;font-size:13px;font-weight:700;color:var(--muted);padding:4px 8px;border-radius:6px;cursor:pointer}
+html[data-lang=ko] [data-l=ko],html[data-lang=en] [data-l=en]{background:var(--ink);color:var(--bg)}
+
+/* ---------- 슬라이드 공통 (모바일 기본값) ---------- */
+.slide{position:relative;margin:0 auto;padding:44px 20px 48px}
+/* 페이지 머리·번호는 PPT용 이미지로 내보낼 때만 보임 */
+html:not(.export) .sh,html:not(.export) .sf{display:none}
+.sh{position:absolute;top:18px;left:20px;right:20px;display:flex;justify-content:space-between;font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.5px}
+.sh .lg b{color:var(--accent)}
+.sf{position:absolute;bottom:16px;right:20px;font-size:11px;font-weight:700;color:var(--muted)}
+.in{display:grid;gap:28px}
+.eyebrow{color:var(--accent);font-weight:800;font-size:13px;letter-spacing:.5px;margin-bottom:8px}
+h2{font-size:30px;line-height:1.22;margin:0 0 14px;font-weight:850;letter-spacing:-.5px}
+.lead{font-size:16px;line-height:1.7;color:var(--muted);margin:0 0 20px}
+.note{margin:16px 0 0;font-size:12.5px;color:var(--muted);line-height:1.6}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-block;padding:10px 18px;border-radius:999px;font-weight:700;font-size:15px;text-decoration:none;color:var(--ink);background:#fff;border:1.5px solid var(--line)}
+.btn.p{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip{font:inherit;font-weight:700;font-size:14px;border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:7px 14px;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
+.parts .chip[aria-pressed=true]{background:var(--accent);border-color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row>.lbl{color:var(--muted);font-size:13px;font-weight:600;margin-right:2px}
+
+/* 표지 */
+.hero h1{font-size:76px;line-height:.95;margin:0 0 14px;font-weight:900;letter-spacing:2px}
+.hero h1 span{color:var(--accent)}
+.hero .sub{font-size:19px;font-weight:700;line-height:1.45;margin:0 0 22px}
+.hv{border-radius:20px;overflow:hidden;aspect-ratio:16/9;background:#2b2b2b;box-shadow:0 18px 40px rgba(90,50,30,.16)}
+.hv video{width:100%;height:100%;object-fit:cover}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stats>div{background:#fff;border-radius:16px;padding:14px 16px;box-shadow:0 4px 14px rgba(90,50,30,.06)}
+.stats b{display:block;font-size:32px;font-weight:900;color:var(--accent);line-height:1;margin-bottom:6px}
+.stats>div>span{font-size:13px;line-height:1.45;color:var(--muted);font-weight:600}
+
+/* 대화 */
+.chat{background:#fff;border-radius:22px;box-shadow:0 18px 40px rgba(90,50,30,.12);overflow:hidden}
+.chat-hd{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);font-weight:800;font-size:14px}
+.chat-hd .dot{width:9px;height:9px;border-radius:50%;background:var(--accent)}
+.play{margin-left:auto;font:inherit;font-size:13px;font-weight:800;border:0;background:var(--ink);color:#fff;border-radius:999px;padding:7px 14px;cursor:pointer}
+.play.on{background:var(--accent)}
+.chat-bd{height:320px;overflow:hidden;padding:16px;display:flex;flex-direction:column;justify-content:flex-end;gap:9px;background:linear-gradient(#fffaf5,#fff);-webkit-mask-image:linear-gradient(transparent 0,#000 48px);mask-image:linear-gradient(transparent 0,#000 48px)}
+.msg{max-width:80%;padding:9px 13px;border-radius:16px;font-size:15px;line-height:1.45;animation:pop .35s ease both}
+.msg small{display:block;font-size:11px;font-weight:800;margin-bottom:2px;opacity:.75}
+.msg.t{align-self:flex-end;background:#efe6dd;border-bottom-right-radius:5px}
+.msg.y{align-self:flex-start;background:var(--accent);color:#fff;border-bottom-left-radius:5px}
+.msg.typing i{display:inline-block;width:6px;height:6px;margin:0 2px;border-radius:50%;background:#fff;animation:blink 1s infinite}
+.msg.typing i:nth-child(2){animation-delay:.15s}.msg.typing i:nth-child(3){animation-delay:.3s}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes blink{50%{opacity:.25}}
+.bar{height:3px;background:var(--line)}.bar i{display:block;height:100%;width:0;background:var(--accent)}
+.chain{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chain>span{background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:6px 13px;font-weight:700;font-size:14px}
+.chain i{font-style:normal;color:var(--muted)}
+
+/* 로봇 (터치 · 몸) */
+.vis{display:flex;justify-content:center}
+.robot{position:relative;width:min(260px,72%);user-select:none}
+.robot>img{width:100%;filter:drop-shadow(0 22px 26px rgba(90,50,30,.18))}
+.screen{position:absolute;left:31.8%;top:10.4%;width:28.4%;height:10.1%;overflow:hidden;border-radius:2px;background:linear-gradient(180deg,#dcc4be 0%,#e6d0c8 55%,#ecd9d0 100%);opacity:0;transition:opacity .25s}
+.screen.on{opacity:1}
+.screen img{width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply;opacity:.88;filter:blur(.35px) contrast(.92);transform:scale(.86)}
+.screen::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,0) 38%),repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 2px,rgba(0,0,0,.025) 2px 4px);pointer-events:none}
+.spot{position:absolute;width:17%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:0;background:rgba(226,111,67,.18);cursor:pointer;padding:0}
+.spot::before{content:"";position:absolute;inset:30%;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px #fff}
+.spot::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--accent);animation:ping 1.8s ease-out infinite}
+.spot.on{background:rgba(226,111,67,.35)}
+@keyframes ping{from{transform:scale(.6);opacity:1}to{transform:scale(1.5);opacity:0}}
+.bubble{position:absolute;left:62%;top:-4%;width:max-content;max-width:210px;background:#fff;border-radius:16px;padding:12px 16px;font-size:16px;font-weight:800;box-shadow:0 10px 30px rgba(90,50,30,.12);opacity:0;transform:translateY(8px);transition:.25s}
+.bubble::after{content:"";position:absolute;left:-8px;bottom:16px;border:9px solid transparent;border-right-color:#fff;border-left:0}
+.bubble.show{opacity:1;transform:none}
+.bubble small{display:block;font-size:11px;font-weight:700;color:var(--accent);margin-bottom:2px}
+.tag{position:absolute;width:6.2%;aspect-ratio:1;transform:translate(-50%,-50%) scale(.6);border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px #fff;opacity:0;transition:.25s;pointer-events:none}
+.tag.on{opacity:1;transform:translate(-50%,-50%) scale(1);box-shadow:0 0 0 3px #fff,0 0 0 10px rgba(226,111,67,.25)}
+.hwl{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hwl li{background:#fff;border-radius:12px;padding:9px 12px;cursor:pointer;border:1.5px solid transparent;box-shadow:0 4px 14px rgba(90,50,30,.05)}
+.hwl li b{display:block;font-size:14px}.hwl li>span{font-size:12px;color:var(--muted)}
+.hwl li.on{border-color:var(--accent)}
+
+/* 관찰 */
+.idle{background:#fff;border-radius:22px;padding:22px;box-shadow:0 18px 40px rgba(90,50,30,.12);display:grid;grid-template-columns:1fr;justify-items:center;gap:18px}
+.ring{position:relative;width:140px;aspect-ratio:1}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:9}.ring .trk{stroke:var(--line)}
+.ring .arc{stroke:var(--accent);stroke-linecap:round;stroke-dasharray:327;stroke-dashoffset:327}
+.ring .cnt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring b{font-size:38px;font-weight:900;line-height:1}.ring small{font-size:11.5px;color:var(--muted);font-weight:700}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:7px;font-size:14px;font-weight:600;width:100%}
+.steps li{padding:8px 12px;border-radius:11px;background:var(--soft);color:var(--muted);transition:.3s}
+.steps li.on{background:#fde6db;color:var(--ink)}
+.steps li.say.on{background:var(--accent);color:#fff}
+.steps li.say b{font-size:11px}
+.idle-ft{grid-column:1/-1;width:100%;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.idle-ft .play{margin-left:auto}
+
+/* 감정 */
+.emo .in{text-align:center;justify-items:center;gap:0}
+.emo .faces{margin-top:18px}
+.emo .lead{max-width:640px;margin-left:auto;margin-right:auto}
+.emo .row{justify-content:center}
+.faces{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%}
+.fc{margin:0}
+.fc .scr{aspect-ratio:1.45;border-radius:10px;overflow:hidden;background:linear-gradient(180deg,#dcc4be 0%,#e6d0c8 55%,#ecd9d0 100%);border:5px solid #fff;box-shadow:0 6px 18px rgba(90,50,30,.10)}
+.fc .scr img{width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply;opacity:.88;filter:contrast(.92);transform:scale(.86)}
+.fc figcaption{font-size:13px;font-weight:700;margin-top:6px}
+
+/* 성과 · 팀 */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cards>div{background:#fff;border-radius:16px;padding:16px;box-shadow:0 4px 14px rgba(90,50,30,.06)}
+.cards b{display:block;font-size:16px;margin-bottom:5px}
+.cards>div>span{font-size:13px;line-height:1.45;color:var(--muted);font-weight:600}
+.aw b{color:var(--accent)}
+.aw>div:last-child{grid-column:1/-1}
+.team .cards>div.hw{background:#fffaf5}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px 0 36px}
+
+.rv{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s ease}
+.rv.shown{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+/* ---------- 데스크톱: 16:9 고정 슬라이드, 크기는 슬라이드 폭 기준(cqw) ---------- */
+/* PPT 내보내기(html.export): 16:9 고정 슬라이드, 크기는 슬라이드 폭 기준(cqw) */
+@media (min-width:900px){
+  html.export body{padding:0 24px}
+  html.export .slide{width:100%;max-width:1600px;aspect-ratio:16/9;container-type:inline-size;padding:0;margin:0 auto;overflow:hidden}
+  html.export .slide{background:var(--slide)}
+  html.export .sh{top:2.6cqw;left:5.5cqw;right:5.5cqw;font-size:.85cqw}
+  html.export .sf{bottom:2.4cqw;right:5.5cqw;font-size:.8cqw}
+  html.export .in{position:absolute;inset:5.6cqw 5.5cqw 4.6cqw;grid-template-columns:40fr 60fr;gap:4.5cqw;align-items:center}
+  html.export .in.rev{grid-template-columns:60fr 40fr}
+  html.export .in.rev>:first-child{order:2}
+  html.export .eyebrow{font-size:1cqw;margin-bottom:1cqw}
+  html.export h2{font-size:3.3cqw;margin-bottom:1.5cqw}
+  html.export .lead{font-size:1.2cqw;margin-bottom:2cqw}
+  html.export .note{font-size:.85cqw;margin-top:1.5cqw}
+  html.export .btn{font-size:1cqw;padding:.75cqw 1.4cqw}
+  html.export .chip{font-size:.95cqw;padding:.5cqw 1cqw;border-width:.1cqw}
+  html.export .row{gap:.55cqw}
+  html.export .row>.lbl{font-size:.9cqw}
+  html.export .chain{gap:.55cqw}
+  html.export .chain>span{font-size:.95cqw;padding:.45cqw .95cqw;border-width:.1cqw}
+  html.export .hero .in{grid-template-columns:38fr 62fr;grid-template-rows:1fr auto;row-gap:3cqw;inset:6cqw 5.5cqw 5cqw}
+  html.export .hero h1{font-size:8cqw;margin-bottom:1.2cqw}
+  html.export .hero .sub{font-size:1.55cqw;margin-bottom:2.2cqw}
+  html.export .hv{border-radius:1.5cqw}
+  html.export .stats{grid-column:1/-1;grid-template-columns:repeat(4,1fr);gap:1cqw}
+  html.export .stats>div{border-radius:1.2cqw;padding:1.3cqw 1.5cqw;display:flex;align-items:center;gap:1.1cqw}
+  html.export .stats b{font-size:3cqw;margin:0}
+  html.export .stats>div>span{font-size:.9cqw}
+  html.export .chat{border-radius:1.6cqw}
+  html.export .chat-hd{padding:1cqw 1.3cqw;font-size:1cqw;gap:.6cqw}
+  html.export .chat-hd .dot{width:.65cqw;height:.65cqw}
+  html.export .play{font-size:.9cqw;padding:.5cqw 1cqw}
+  html.export .chat-bd{height:31cqw;padding:1.3cqw;gap:.7cqw;-webkit-mask-image:linear-gradient(transparent 0,#000 3.5cqw);mask-image:linear-gradient(transparent 0,#000 3.5cqw)}
+  html.export .msg{font-size:1.1cqw;padding:.75cqw 1.05cqw;border-radius:1.2cqw}
+  html.export .msg small{font-size:.75cqw}
+  html.export .msg.typing i{width:.45cqw;height:.45cqw}
+  html.export .bar{height:.22cqw}
+  html.export .robot{width:21cqw}
+  html.export .bubble{max-width:15cqw;padding:1cqw 1.3cqw;font-size:1.25cqw;border-radius:1.2cqw}
+  html.export .bubble small{font-size:.8cqw}
+  html.export .hwl{gap:.6cqw;margin-top:1.4cqw}
+  html.export .hwl li{padding:.7cqw 1cqw;border-radius:.9cqw;border-width:.1cqw}
+  html.export .hwl li b{font-size:1cqw}
+  html.export .hwl li>span{font-size:.85cqw}
+  html.export .idle{grid-template-columns:13cqw 1fr;justify-items:stretch;align-items:center;gap:2.2cqw;padding:2.4cqw;border-radius:1.6cqw}
+  html.export .ring{width:13cqw}
+  html.export .ring b{font-size:3.2cqw}
+  html.export .ring small{font-size:.85cqw}
+  html.export .steps{gap:.6cqw;font-size:1.05cqw}
+  html.export .steps li{padding:.75cqw 1cqw;border-radius:.8cqw}
+  html.export .steps li.say b{font-size:.8cqw}
+  html.export .idle-ft{gap:.6cqw}
+  html.export .emo .in{grid-template-columns:1fr;align-content:center;gap:0}
+  html.export .emo .lead{max-width:50cqw}
+  html.export .faces{grid-template-columns:repeat(9,1fr);gap:1cqw;margin-top:2.6cqw}
+  html.export .fc .scr{border-width:.4cqw;border-radius:.9cqw}
+  html.export .fc figcaption{font-size:1cqw;margin-top:.6cqw}
+  html.export .cards{gap:1cqw}
+  html.export .cards>div{border-radius:1.2cqw;padding:1.5cqw 1.6cqw}
+  html.export .cards b{font-size:1.35cqw;margin-bottom:.4cqw}
+  html.export .cards>div>span{font-size:.95cqw}
+  html.export .team .cards{grid-template-columns:repeat(3,1fr)}
+  html.export footer{font-size:12px}
+}
+
+/* 01 왜 */
+.big{display:flex;align-items:baseline;gap:10px;margin:0 0 6px}
+.big b{font-size:56px;font-weight:900;color:var(--accent);line-height:1}
+.big span{font-size:15px;font-weight:700;color:var(--muted)}
+.src{font-size:11.5px;color:var(--muted);margin:0 0 18px}
+.photo{margin:0}
+.photo img{width:100%;aspect-ratio:16/9;object-fit:cover;object-position:50% 60%;border-radius:18px;box-shadow:0 14px 34px rgba(90,50,30,.14)}
+.photo figcaption{font-size:12.5px;color:var(--muted);margin-top:8px}
+.apply{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
+.apply li{background:#fff;border-radius:12px;padding:10px 14px;font-size:14px;line-height:1.45;box-shadow:0 4px 14px rgba(90,50,30,.05)}
+.apply li b{display:block;font-size:12px;color:var(--accent);margin-bottom:2px}
+.apply li i{font-style:normal;color:var(--muted)}
+
+/* 06 목소리 */
+.voices{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.vc{background:#fff;border-radius:20px;padding:20px;box-shadow:0 10px 30px rgba(90,50,30,.10);display:grid;gap:14px;justify-items:start}
+.vc.after{outline:2px solid var(--accent)}
+.vc small{font-size:12px;font-weight:800;color:var(--muted)}
+.vc.after small{color:var(--accent)}
+.vc b{font-size:18px}
+.wave{display:flex;align-items:center;gap:3px;height:48px;width:100%}
+.wave i{flex:1;background:var(--line);border-radius:3px;height:20%;transition:height .12s}
+.vc.after .wave i{background:#f4c3ad}
+.vc.on .wave i{background:var(--accent)}
+
+/* 07 구조 */
+.sys{display:grid;grid-template-columns:1fr 2.1fr 1fr;gap:12px;align-items:stretch;font-size:13px}
+.col{display:grid;gap:8px;align-content:center}
+.col>h4,.jet>h4,.srv>h4{margin:0 0 2px;font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.3px}
+.nd{background:#fff;border-radius:10px;padding:8px 10px;font-weight:700;line-height:1.35;box-shadow:0 3px 10px rgba(90,50,30,.06)}
+.nd small{display:block;font-weight:600;color:var(--muted);font-size:11px}
+.nd.me{outline:2px solid var(--accent)}
+.jet{background:#f3e6da;border-radius:16px;padding:12px;display:grid;gap:8px;align-content:start}
+.jet .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.jet .core{grid-column:1/-1;background:var(--ink);color:#fff}
+.jet .core small{color:#d9c8bb}
+.srv{grid-column:2;background:#fff;border:1.5px dashed var(--line);border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px;font-weight:700}
+.srv span{font-weight:600;color:var(--muted);font-size:11.5px}
+.lg2{grid-column:1/-1;display:flex;gap:16px;font-size:11.5px;color:var(--muted);font-weight:600}
+.lg2 i{display:inline-block;width:12px;height:12px;border-radius:3px;outline:2px solid var(--accent);background:#fff;vertical-align:-2px;margin-right:5px}
+.facts{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.facts li{font-size:14.5px;line-height:1.5;padding-left:16px;position:relative;color:var(--ink)}
+.facts li::before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+/* 08 모의수업 */
+.pics{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pics img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:14px}
+.script{background:#fff;border-radius:20px;padding:16px;box-shadow:0 10px 30px rgba(90,50,30,.10);display:grid;gap:7px}
+.script .msg{animation:none;max-width:86%}
+.script .gap{text-align:center;font-size:11px;color:var(--muted);font-weight:700}
+.tagline{display:inline-block;background:#fde6db;color:var(--accent);font-weight:800;font-size:12px;border-radius:999px;padding:3px 10px;margin-bottom:10px}
+
+/* 09 반응 */
+.qs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.q{background:#fff;border-radius:18px;padding:16px 18px;box-shadow:0 4px 14px rgba(90,50,30,.06)}
+.q h4{margin:0 0 8px;font-size:13px;font-weight:800}
+.q.good h4{color:var(--accent)}.q.bad h4{color:var(--muted)}
+.q p{margin:0 0 8px;font-size:14px;line-height:1.55}
+.q p:last-child{margin:0}
+.q.wide{grid-column:1/-1;background:var(--ink);color:#fff}
+.q.wide h4{color:#f4c3ad}
+
+/* PPT 내보내기(html.export): 16:9 고정 슬라이드, 크기는 슬라이드 폭 기준(cqw) */
+@media (min-width:900px){
+  html.export .big{gap:.8cqw;margin-bottom:.4cqw}
+  html.export .big b{font-size:4.6cqw}
+  html.export .big span{font-size:1.1cqw}
+  html.export .src{font-size:.8cqw;margin-bottom:1.6cqw}
+  html.export .photo img{border-radius:1.3cqw}
+  html.export .photo figcaption{font-size:.85cqw;margin-top:.6cqw}
+  html.export .apply{gap:.6cqw;margin-top:1cqw}
+  html.export .apply li{font-size:1cqw;padding:.75cqw 1cqw;border-radius:.9cqw}
+  html.export .apply li b{font-size:.8cqw}
+  html.export .why .in{grid-template-columns:44fr 56fr}
+  html.export .voices{gap:1.2cqw}
+  html.export .vc{padding:1.8cqw;border-radius:1.5cqw;gap:1.2cqw}
+  html.export .vc small{font-size:.85cqw}
+  html.export .vc b{font-size:1.4cqw}
+  html.export .wave{height:4.5cqw;gap:.25cqw}
+  html.export .sys{gap:.9cqw;font-size:1.05cqw}
+  html.export .col,html.export .jet .grid{gap:.6cqw}
+  html.export .col>h4,html.export .jet>h4,html.export .srv>h4{font-size:.75cqw}
+  html.export .nd{border-radius:.7cqw;padding:.6cqw .75cqw}
+  html.export .nd small{font-size:.75cqw}
+  html.export .jet{border-radius:1.1cqw;padding:.9cqw;gap:.6cqw}
+  html.export .srv{border-radius:1cqw;padding:.75cqw .9cqw;gap:.8cqw}
+  html.export .srv span{font-size:.8cqw}
+  html.export .lg2{font-size:.8cqw;gap:1.2cqw}
+  html.export .lg2 i{width:.85cqw;height:.85cqw}
+  html.export .facts{gap:.6cqw}
+  html.export .facts li{font-size:1.05cqw;padding-left:1.2cqw}
+  html.export .facts li::before{width:.45cqw;height:.45cqw}
+  html.export .arch .in{grid-template-columns:34fr 66fr}
+  html.export .pics{gap:.8cqw}
+  html.export .pics img{border-radius:1cqw}
+  html.export .script{padding:1.3cqw;border-radius:1.5cqw;gap:.5cqw}
+  html.export .script .gap{font-size:.8cqw}
+  html.export .script .msg{font-size:1cqw;padding:.6cqw .9cqw}
+  html.export .tagline{font-size:.85cqw;padding:.25cqw .8cqw;margin-bottom:.8cqw}
+  html.export .mock .in{grid-template-columns:52fr 48fr}
+  html.export .qs{gap:.9cqw}
+  html.export .q{padding:1.3cqw 1.5cqw;border-radius:1.3cqw}
+  html.export .q h4{font-size:.95cqw;margin-bottom:.6cqw}
+  html.export .q p{font-size:1.12cqw;margin-bottom:.6cqw}
+  html.export .voice .in{grid-template-columns:40fr 60fr}
+}
+@media (max-width:899px){
+  .sys{grid-template-columns:1fr}.srv{grid-column:auto}
+  .voices,.qs,.pics{grid-template-columns:1fr}
+}
+.stack{display:grid;gap:14px}
+.close .aw{grid-template-columns:1fr 1fr}
+.close .ppl{grid-template-columns:1fr 1fr}
+.close .ppl>div.hw{background:#fffaf5}
+/* PPT 내보내기(html.export): 16:9 고정 슬라이드, 크기는 슬라이드 폭 기준(cqw) */
+@media (min-width:900px){
+  html.export .stack{gap:1.4cqw}
+  html.export .close .aw{grid-template-columns:repeat(5,1fr)}
+  html.export .close .aw>div:last-child{grid-column:auto}
+  html.export .close .ppl{grid-template-columns:repeat(3,1fr)}
+  html.export .close .cards>div{padding:1.1cqw 1.2cqw}
+  html.export .close .cards b{font-size:1.15cqw}
+  html.export .close .cards>div>span{font-size:.85cqw}
+  html.export .close .in{grid-template-columns:30fr 70fr}
+}
+
+/* 챕터 내비 */
+.chap{position:sticky;top:0;z-index:20;display:flex;gap:4px;overflow-x:auto;padding:8px 20px;background:rgba(251,244,236,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);scrollbar-width:none}
+.chap a{flex:none;font-size:13px;font-weight:700;color:var(--muted);text-decoration:none;padding:5px 12px;border-radius:999px}
+.chap a.on{background:var(--ink);color:#fff}
+html.export .chap,html.export .top{display:none}
+section.slide{scroll-margin-top:48px}
+
+/* 02 한눈에 */
+.flow{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center}
+.fcol{display:grid;gap:8px}
+.fcol h4{margin:0;font-size:12px;font-weight:800;color:var(--muted)}
+.fi{display:flex;gap:10px;align-items:center;background:#fff;border-radius:14px;padding:10px 12px;text-decoration:none;color:var(--ink);box-shadow:0 4px 14px rgba(90,50,30,.06);font-weight:800;font-size:15px;border:1.5px solid transparent;transition:.2s}
+.fi:hover{border-color:var(--accent)}
+.fi b{color:var(--accent);font-size:18px}
+.fi small{display:block;font-weight:600;font-size:11.5px;color:var(--muted)}
+.fi.out{background:var(--accent);color:#fff}.fi.out small{color:#ffe1d3}
+.fmid{display:grid;justify-items:center;gap:8px;text-align:center;font-size:12px;font-weight:700;color:var(--muted)}
+.fmid img{width:110px;filter:drop-shadow(0 14px 18px rgba(90,50,30,.16))}
+
+/* 06 표현 */
+.exhd{display:grid;gap:6px}
+.exface .row{margin-bottom:12px}
+.exvoice{display:grid;gap:10px}
+.vlbl b{display:block;font-size:15px}.vlbl small{font-size:12px;color:var(--muted);font-weight:600}
+.exvoice .vc{grid-template-columns:auto auto 1fr auto;align-items:center;padding:12px 16px;gap:12px}
+.exvoice .vc .wave{height:30px}
+
+/* 08 현장 검증 */
+.pre{background:#fff;border-left:4px solid var(--accent);border-radius:10px;padding:10px 14px;font-size:14px;line-height:1.5;margin-top:12px}
+.pre small{display:block;font-size:11.5px;font-weight:800;color:var(--accent);margin-bottom:2px}
+.fdr{display:grid;gap:18px}
+.fd .qs{grid-template-columns:1fr}
+.fd .q{padding:12px 14px}
+
+/* PPT 내보내기(html.export): 16:9 고정 슬라이드, 크기는 슬라이드 폭 기준(cqw) */
+@media (min-width:900px){
+  html.export .chap{justify-content:center;gap:.3vw}
+  html.export .flow{gap:1.4cqw}
+  html.export .fcol{gap:.8cqw}
+  html.export .fcol h4{font-size:.85cqw}
+  html.export .fi{gap:.8cqw;border-radius:1cqw;padding:.9cqw 1.1cqw;font-size:1.15cqw;border-width:.1cqw}
+  html.export .fi b{font-size:1.4cqw}
+  html.export .fi small{font-size:.8cqw}
+  html.export .fmid{gap:.8cqw;font-size:.85cqw;max-width:12cqw}
+  html.export .fmid img{width:10cqw}
+  html.export .ov .in{grid-template-columns:34fr 66fr}
+  html.export .ex .in{grid-template-columns:1fr 1fr;grid-template-rows:auto auto;align-content:center;row-gap:2.4cqw;column-gap:4cqw}
+  html.export .exhd{grid-column:1/-1;grid-template-columns:40fr 60fr;gap:4cqw;align-items:end}
+  html.export .exhd .lead{margin:0}
+  html.export .exface{grid-column:1/-1}
+  html.export .exface .row{margin-bottom:1cqw}
+  html.export .ex .faces{grid-template-columns:repeat(9,1fr);gap:1cqw;margin:0}
+  html.export .exvoice{grid-column:1/-1;grid-template-columns:16cqw 1fr;gap:1.2cqw;align-items:center}
+  html.export .vlbl b{font-size:1.15cqw}
+  html.export .vlbl small{font-size:.8cqw}
+  html.export .exvoice .voices{gap:1.2cqw}
+  html.export .exvoice .vc{padding:.9cqw 1.3cqw;gap:1cqw;border-radius:1.2cqw}
+  html.export .exvoice .vc .wave{height:2.6cqw}
+  html.export .exvoice .vc b{font-size:1.05cqw}
+  html.export .fd .in{grid-template-columns:36fr 64fr;align-items:center}
+  html.export .fd h2{font-size:2.9cqw}
+  html.export .fd .lead{margin-bottom:1.2cqw}
+  html.export .pre{border-left-width:.3cqw;border-radius:.8cqw;padding:.8cqw 1.1cqw;font-size:1cqw;margin-top:1cqw}
+  html.export .pre small{font-size:.8cqw}
+  html.export .fdr{grid-template-columns:1fr 1fr;gap:1.6cqw;align-items:start}
+  html.export .fd .script{padding:1cqw;gap:.45cqw}
+  html.export .fd .script .msg{font-size:.95cqw;padding:.5cqw .8cqw}
+  html.export .fd .qs{gap:.7cqw}
+  html.export .fd .q{padding:1cqw 1.2cqw}
+  html.export .fd .q h4{font-size:.85cqw;margin-bottom:.4cqw}
+  html.export .fd .q p{font-size:.98cqw;margin-bottom:.4cqw}
+}
+@media (max-width:899px){
+  .flow{grid-template-columns:1fr}.fmid img{width:90px}
+  .exvoice .vc{grid-template-columns:1fr}
+}
+
+/* ===== 웹 보기 (export 아님): 자연스러운 한 페이지 흐름 ===== */
+/* 공통(모바일 포함): 섹션 사이 부드러운 띠 + 일정한 머리 */
+  html:not(.export) .slide{padding:56px 20px}
+  html:not(.export) .big{flex-wrap:wrap}
+  html:not(.export) .big b{white-space:nowrap}
+  html:not(.export) .pics{grid-template-columns:1fr 1fr}
+  html:not(.export) .slide:nth-of-type(even){background:var(--band)}
+  html:not(.export) .slide+.slide{border-top:1px solid var(--line)}
+  html:not(.export) .hero{padding-top:28px;padding-bottom:56px}
+  html:not(.export) .eyebrow{display:flex;align-items:center;gap:10px;font-size:13px;letter-spacing:.6px;margin-bottom:12px}
+  html:not(.export) .eyebrow::before{content:"";width:22px;height:2px;border-radius:2px;background:var(--accent)}
+  html:not(.export) .exhd .eyebrow{justify-content:flex-start}
+  html:not(.export) section.slide{scroll-margin-top:52px}
+  html:not(.export) .chap{padding:10px 20px}
+  html:not(.export) .chat-bd{height:360px}
+@media (min-width:900px){
+  html:not(.export) body{padding:0}
+  html:not(.export) .slide{padding:88px 40px}
+  html:not(.export) .chap{justify-content:center;gap:6px}
+  html:not(.export) .hero{padding:40px 40px 88px}
+  html:not(.export) .in{max-width:1200px;margin:0 auto;grid-template-columns:42fr 58fr;gap:64px;align-items:center}
+  html:not(.export) .in.rev{grid-template-columns:58fr 42fr}
+  html:not(.export) .in.rev>:first-child{order:2}
+  html:not(.export) h2{font-size:40px;line-height:1.2;margin-bottom:18px}
+  html:not(.export) .lead{font-size:17px;line-height:1.75;margin-bottom:22px}
+  html:not(.export) .note{font-size:13px}
+  html:not(.export) .eyebrow{font-size:14px}
+  html:not(.export) .hero .in{grid-template-columns:40fr 60fr;row-gap:48px}
+  html:not(.export) .hero h1{font-size:104px;margin-bottom:18px}
+  html:not(.export) .hero .sub{font-size:22px;margin-bottom:28px}
+  html:not(.export) .stats{grid-column:1/-1;grid-template-columns:repeat(4,1fr);gap:14px}
+  html:not(.export) .stats>div{display:flex;align-items:center;gap:14px;padding:18px 20px}
+  html:not(.export) .stats b{font-size:40px;margin:0}
+  html:not(.export) .stats>div>span{font-size:13.5px}
+  html:not(.export) .why .in{grid-template-columns:46fr 54fr;align-items:start}
+  html:not(.export) .big b{font-size:64px}
+  html:not(.export) .big span{font-size:16px}
+  html:not(.export) .src{font-size:12px}
+  html:not(.export) .apply li{font-size:15px}
+  html:not(.export) .ov .in{grid-template-columns:36fr 64fr}
+  html:not(.export) .fi{font-size:16px;padding:12px 14px}
+  html:not(.export) .fmid img{width:130px}
+  html:not(.export) .chat-bd{height:380px}
+  html:not(.export) .msg{font-size:16px}
+  html:not(.export) .robot{width:270px}
+  html:not(.export) .bubble{max-width:220px}
+  html:not(.export) #quiet .in{grid-template-columns:44fr 56fr}
+  html:not(.export) .idle{grid-template-columns:170px 1fr;justify-items:stretch;align-items:center;gap:28px;padding:28px}
+  html:not(.export) .ring{width:170px}
+  html:not(.export) .ring b{font-size:44px}
+  html:not(.export) .ring small{font-size:12px}
+  html:not(.export) .steps{font-size:15px;gap:8px}
+  html:not(.export) .steps li{padding:10px 14px}
+  html:not(.export) .ex .in{grid-template-columns:1fr;row-gap:36px}
+  html:not(.export) .exhd{grid-template-columns:42fr 58fr;gap:64px;align-items:end}
+  html:not(.export) .exhd .lead{margin:0}
+  html:not(.export) .ex .faces{grid-template-columns:repeat(9,1fr);gap:12px;margin:0}
+  html:not(.export) .fc figcaption{font-size:13.5px;margin-top:8px}
+  html:not(.export) .exface .row{margin-bottom:16px}
+  html:not(.export) .exvoice{grid-template-columns:220px 1fr;gap:20px;align-items:center}
+  html:not(.export) .vlbl b{font-size:17px}
+  html:not(.export) .exvoice .voices{gap:16px}
+  html:not(.export) .arch .in{grid-template-columns:34fr 66fr}
+  html:not(.export) .facts li{font-size:15.5px}
+  html:not(.export) .sys{font-size:14px;gap:14px}
+  html:not(.export) .fd .in{grid-template-columns:38fr 62fr;align-items:start}
+  html:not(.export) .fdr{grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+  html:not(.export) .fd .q p{font-size:14.5px}
+  html:not(.export) .script .msg{font-size:14.5px}
+  html:not(.export) .close .in{grid-template-columns:32fr 68fr;align-items:center}
+  html:not(.export) .close .aw{grid-template-columns:repeat(3,1fr)}
+  html:not(.export) .close .aw>div:last-child{grid-column:span 2}
+  html:not(.export) .close .ppl{grid-template-columns:repeat(3,1fr)}
+  html:not(.export) .cards b{font-size:16px}
+  html:not(.export) .cards>div>span{font-size:13.5px}
+  html:not(.export) .stack{gap:16px}
+  html:not(.export) footer{padding:32px 0 48px;border-top:1px solid var(--line)}
+}
+
+@media (min-width:900px) and (max-width:1100px){
+  html:not(.export) .in{gap:40px}
+  html:not(.export) .ex .faces{grid-template-columns:repeat(5,1fr)}
+  html:not(.export) .stats>div{flex-direction:column;align-items:flex-start;gap:6px}
+}
+
+@media (max-width:899px){
+  html:not(.export) .bubble{left:54%;max-width:150px;font-size:14px;padding:10px 12px}
+}
+
+
+/* 표지 프로젝트 정보 */
+html .stats.meta>div{display:block;padding:18px 20px}
+html .stats.meta b{margin:0 0 4px}
+.stats.meta small{display:block;font-size:11.5px;font-weight:800;color:var(--accent);letter-spacing:.3px;margin-bottom:4px}
+html .stats.meta b{display:block;font-size:17px;font-weight:800;color:var(--ink);line-height:1.3;margin:0 0 4px}
+html .stats.meta>div>span{display:block;font-size:12.5px;line-height:1.45;color:var(--muted);font-weight:600}
+html.export .stats.meta>div{padding:1.2cqw 1.4cqw}
+html.export .stats.meta small{font-size:.8cqw;margin-bottom:.3cqw}
+html.export .stats.meta b{font-size:1.25cqw!important;margin:0 0 .3cqw}
+html.export .stats.meta>div>span{font-size:.85cqw}
+
+/* ===== v3k: 터치 기록 · 먼저 말 걸기 · 감정 바퀴 · 개발 과정 ===== */
+.logcard{margin-top:16px;background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 4px 14px rgba(90,50,30,.06)}
+.logcard small{display:block;font-size:12px;font-weight:800;color:var(--accent);margin-bottom:8px}
+.logcard p{margin:0 0 6px;font-size:14.5px;line-height:1.5}.logcard p:last-child{margin:0}
+.logcard p b{display:inline-block;font-size:11.5px;background:#fde6db;color:var(--accent);border-radius:999px;padding:1px 8px;margin-right:8px;vertical-align:1px}
+
+.seen{display:grid;gap:14px}
+.sc{display:grid;grid-template-columns:1fr auto 1.3fr;align-items:center;gap:14px;background:#fff;border-radius:20px;padding:18px 20px;box-shadow:0 10px 30px rgba(90,50,30,.10)}
+.sc i{font-style:normal;font-size:22px;color:var(--accent);font-weight:800}
+.cam small,.say small{display:block;font-size:12px;font-weight:800;color:var(--muted);margin-bottom:6px}
+.obj{display:inline-block;background:var(--soft);border-radius:999px;padding:5px 12px;font-weight:700;font-size:14.5px;margin:0 6px 6px 0}
+.say{background:var(--accent);color:#fff;border-radius:16px;border-bottom-left-radius:5px;padding:12px 14px;font-size:16px;font-weight:700;line-height:1.45}
+.say small{color:#ffe1d3}
+.seen .cap2{margin:0;font-size:12.5px;color:var(--muted)}
+
+.pers{margin-top:8px;background:#fff;border-radius:16px;padding:14px 16px;box-shadow:0 4px 14px rgba(90,50,30,.06)}
+.pers p{margin:10px 0 0;font-size:14px;line-height:1.6;color:var(--muted)}
+.wheel{display:flex;justify-content:center}
+html .ex .wheel .faces{display:block;position:relative;width:min(520px,100%);aspect-ratio:1;margin:0;grid-template-columns:none}
+.wheel .faces::before{content:"";position:absolute;inset:13%;border-radius:50%;border:2px dashed var(--line)}
+html .ex .wheel .fc{position:absolute;width:23%;transform:translate(-50%,-50%);text-align:center;margin:0}
+.wheel .fc:nth-child(1){left:50%;top:50%;width:27%}
+.wheel .fc:nth-child(2){left:50.0%;top:13.0%}
+.wheel .fc:nth-child(3){left:76.2%;top:23.8%}
+.wheel .fc:nth-child(4){left:87.0%;top:50.0%}
+.wheel .fc:nth-child(5){left:76.2%;top:76.2%}
+.wheel .fc:nth-child(6){left:50.0%;top:87.0%}
+.wheel .fc:nth-child(7){left:23.8%;top:76.2%}
+.wheel .fc:nth-child(8){left:13.0%;top:50.0%}
+.wheel .fc:nth-child(9){left:23.8%;top:23.8%}
+
+.wheel .fc .scr{border-width:4px}
+.wheel .fc figcaption{font-size:13px;margin-top:4px}
+.wheel .fc:nth-child(1) figcaption{color:var(--muted)}
+
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.dc{background:#fff;border-radius:18px;padding:16px 18px;box-shadow:0 4px 14px rgba(90,50,30,.06)}
+.dc.wide{grid-column:1/-1}
+.dc h4{margin:0 0 10px;font-size:15px;font-weight:800}
+.dc>p{margin:10px 0 0;font-size:13.5px;line-height:1.55;color:var(--muted)}
+.cmp{width:100%;border-collapse:collapse;font-size:13.5px}
+.cmp td{padding:6px 8px;border-bottom:1px solid var(--line)}
+.cmp td:first-child{font-weight:700}
+.cmp tr.pick td{color:var(--accent);font-weight:800}
+.bars{display:grid;gap:8px}
+.bars>div{display:grid;gap:4px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.bars em{font-style:normal;display:block;width:var(--w);background:var(--line);color:var(--ink);border-radius:6px;padding:3px 8px;font-size:12.5px;font-weight:800;white-space:nowrap;box-sizing:border-box;min-width:fit-content}
+.bars em.a{background:var(--accent);color:#fff}
+.bars.t>div{grid-template-columns:110px 1fr;align-items:center}
+.dc .voices{grid-template-columns:1fr 1fr;gap:12px}
+.dc .vc{grid-template-columns:auto auto 1fr auto;align-items:center;padding:10px 14px;gap:10px;justify-items:stretch;box-shadow:none;background:var(--soft)}
+.dc .vc .wave{height:28px}
+.dc .vc b{font-size:14px}
+
+@media (max-width:899px){
+  .sc{grid-template-columns:1fr}.sc i{transform:rotate(90deg);justify-self:center}
+  .dgrid,.dc .voices{grid-template-columns:1fr}
+  .dc .vc{grid-template-columns:1fr auto}
+}
+html.export .logcard{margin-top:1.2cqw;border-radius:1cqw;padding:1cqw 1.2cqw}
+html.export .logcard small{font-size:.8cqw;margin-bottom:.5cqw}
+html.export .logcard p{font-size:.95cqw;margin-bottom:.4cqw}
+html.export .logcard p b{font-size:.75cqw;padding:.1cqw .6cqw;margin-right:.6cqw}
+html.export .seen{gap:1.2cqw}
+html.export .sc{gap:1.2cqw;border-radius:1.5cqw;padding:1.5cqw 1.7cqw}
+html.export .sc i{font-size:1.6cqw}
+html.export .cam small,html.export .say small{font-size:.8cqw;margin-bottom:.4cqw}
+html.export .obj{font-size:1.05cqw;padding:.35cqw .9cqw;margin:0 .4cqw .4cqw 0}
+html.export .say{font-size:1.2cqw;padding:1cqw 1.2cqw;border-radius:1.2cqw}
+html.export .seen .cap2{font-size:.85cqw}
+html.export .pers{margin-top:.8cqw;border-radius:1.2cqw;padding:1.1cqw 1.3cqw}
+html.export .pers p{font-size:.95cqw;margin-top:.7cqw}
+html.export .ex .in{grid-template-columns:48fr 52fr;grid-template-rows:auto;row-gap:0}
+html.export .ex .wheel .faces{width:32cqw}
+html.export .wheel .fc figcaption{font-size:.85cqw;margin-top:.3cqw}
+html.export .wheel .fc .scr{border-width:.3cqw}
+html.export .dgrid{gap:.9cqw}
+html.export .dc{border-radius:1.2cqw;padding:1.1cqw 1.3cqw}
+html.export .dc h4{font-size:1.05cqw;margin-bottom:.7cqw}
+html.export .dc>p{font-size:.88cqw;margin-top:.6cqw}
+html.export .cmp{font-size:.9cqw}html.export .cmp td{padding:.35cqw .5cqw}
+html.export .bars{gap:.5cqw}html.export .bars>div{font-size:.8cqw;gap:.25cqw}
+html.export .bars em{font-size:.8cqw;padding:.2cqw .55cqw;border-radius:.4cqw}
+html.export .bars.t>div{grid-template-columns:7cqw 1fr}
+html.export .dc .voices{gap:.8cqw}
+html.export .dc .vc{padding:.6cqw 1cqw;gap:.7cqw}
+html.export .dc .vc .wave{height:1.9cqw}
+html.export .dc .vc b{font-size:.95cqw}
+html.export .dv .in{grid-template-columns:32fr 68fr}
+html:not(.export) .ex .in{grid-template-columns:1fr 1fr;align-items:center}
+html:not(.export) .dv .in{grid-template-columns:34fr 66fr;align-items:start}
+@media (max-width:899px){html:not(.export) .ex .in,html:not(.export) .dv .in{grid-template-columns:1fr}}
+
+/* ===== v3m: 프로젝트 페이지 형식 ===== */
+.fig{margin:0}
+.figcap{margin-top:10px;font-size:13px;line-height:1.55;color:var(--muted)}
+.subh{margin:0 0 10px;font-size:13px;font-weight:800;color:var(--ink);letter-spacing:.2px}
+.why .fig+.subh{margin-top:18px}
+.vis-fig{display:grid;justify-items:center;gap:14px}
+.vis-fig .parts{justify-content:center}
+.vis-fig .figcap{text-align:center;max-width:420px}
+.wheel-fig .figcap{text-align:center}
+.chain>span{font-size:13.5px}
+
+.dc h4{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.dc h4 em{font-style:normal;font-size:11.5px;font-weight:800;color:var(--accent);background:#fde6db;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.hb{display:grid;grid-template-columns:130px 1fr auto;align-items:center;gap:8px;font-size:12.5px;margin-bottom:6px}
+.hb span{font-weight:700}
+.hb i{display:block;height:10px;width:var(--w);background:var(--line);border-radius:5px}
+.hb b{font-size:12px;color:var(--muted);font-weight:700}
+.hb.a span,.hb.a b{color:var(--accent)}.hb.a i{background:var(--accent)}
+.gb{display:grid;grid-template-columns:70px 1fr;gap:8px;align-items:center;margin-bottom:8px;font-size:12.5px;font-weight:700}
+.gb>div{display:grid;gap:3px}
+.gb i{display:block;font-style:normal;width:var(--w);background:var(--line);border-radius:5px;padding:2px 8px;font-size:11.5px;font-weight:800;white-space:nowrap}
+.gb i.a{background:var(--accent);color:#fff}
+.stack-bar{display:flex;height:34px;border-radius:8px;overflow:hidden;font-size:12.5px;font-weight:800}
+.stack-bar i{font-style:normal;flex:0 0 var(--w);display:flex;align-items:center;justify-content:center;background:#efd9c9;color:var(--ink);white-space:nowrap;overflow:hidden}
+.stack-bar i.a{background:var(--accent);color:#fff}
+.stack-bar i:last-child{background:#c9b3a3}
+.sb-legend{display:flex;gap:16px;margin-top:8px;font-size:12px;color:var(--muted);font-weight:700}
+.sb-legend>span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;background:#efd9c9;margin-right:6px;vertical-align:-1px}
+.sb-legend>span.a::before{background:var(--accent)}.sb-legend>span:last-child::before{background:#c9b3a3}
+.dc .p1{margin:0;font-size:13.5px;line-height:1.6;color:var(--ink)}
+.dc .vc{grid-template-columns:auto 1fr auto}
+
+.awl{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.awl li{display:grid;grid-template-columns:56px 150px 1fr;gap:14px;align-items:baseline;padding:14px 4px;border-bottom:1px solid var(--line)}
+.awl time{width:auto;font-size:13px;color:var(--muted);font-weight:700}
+.awl b{font-size:17px;color:var(--accent)}
+.awl li>span{font-size:14.5px;font-weight:600}
+.patent{margin-top:18px;background:#fff;border-radius:16px;padding:16px 18px;box-shadow:0 4px 14px rgba(90,50,30,.06);border-left:4px solid var(--accent)}
+.patent small{display:block;font-size:12px;font-weight:800;color:var(--accent);margin-bottom:4px}
+.patent b{display:block;font-size:15.5px;line-height:1.45}
+.patent span{font-size:12.5px;color:var(--muted);font-weight:600}
+
+.advisor{margin:0;font-size:15px;font-weight:700}
+.advisor small{display:block;font-size:12px;color:var(--muted);font-weight:800;margin-bottom:2px}
+.members{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.members li{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 4px 14px rgba(90,50,30,.05)}
+.members .av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font-weight:800;font-size:16px}
+.members li.hw .av{background:var(--ink)}
+.members b{display:block;font-size:15.5px}
+.members li div>span{font-size:12.5px;color:var(--muted);font-weight:600}
+.members em{font-style:normal;font-size:11px;font-weight:800;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 8px}
+@media (max-width:899px){
+  .members{grid-template-columns:1fr}
+  .awl li{grid-template-columns:48px 1fr}.awl li>span{grid-column:2}
+  .hb{grid-template-columns:110px 1fr auto}
+}
+html:not(.export) .rec .in,html:not(.export) .tm .in{align-items:center}
+
+html.export .figcap{margin-top:.7cqw;font-size:.85cqw}
+html.export .subh{font-size:.9cqw;margin-bottom:.7cqw}
+html.export .why .fig+.subh{margin-top:1.2cqw}
+html.export .vis-fig{gap:1cqw}.html.export .vis-fig .figcap{max-width:26cqw}
+html.export .chain>span{font-size:.9cqw}
+html.export .dc h4 em{font-size:.75cqw;padding:.15cqw .6cqw}
+html.export .hb{grid-template-columns:9cqw 1fr auto;gap:.5cqw;font-size:.82cqw;margin-bottom:.4cqw}
+html.export .hb i{height:.65cqw}html.export .hb b{font-size:.78cqw}
+html.export .gb{grid-template-columns:5cqw 1fr;gap:.5cqw;font-size:.82cqw;margin-bottom:.5cqw}
+html.export .gb i{font-size:.75cqw;padding:.15cqw .55cqw}
+html.export .stack-bar{height:2.2cqw;font-size:.82cqw;border-radius:.5cqw}
+html.export .sb-legend{font-size:.78cqw;gap:1cqw;margin-top:.5cqw}
+html.export .dc .p1{font-size:.9cqw}
+html.export .awl li{grid-template-columns:3.6cqw 10cqw 1fr;gap:1cqw;padding:1cqw .3cqw}
+html.export .awl time{font-size:.85cqw}html.export .awl b{font-size:1.2cqw}html.export .awl li>span{font-size:1cqw}
+html.export .patent{margin-top:1.2cqw;border-radius:1cqw;padding:1.1cqw 1.3cqw;border-left-width:.3cqw}
+html.export .patent small{font-size:.8cqw}html.export .patent b{font-size:1.1cqw}html.export .patent span{font-size:.85cqw}
+html.export .advisor{font-size:1.05cqw}html.export .advisor small{font-size:.8cqw}
+html.export .members{gap:.8cqw}
+html.export .members li{gap:.9cqw;border-radius:1cqw;padding:1cqw 1.1cqw}
+html.export .members .av{width:2.8cqw;height:2.8cqw;font-size:1.1cqw}
+html.export .members b{font-size:1.1cqw}html.export .members li div>span{font-size:.85cqw}
+html.export .members em{font-size:.72cqw;padding:.12cqw .55cqw}
+html.export .rec .in{grid-template-columns:36fr 64fr}
+html.export .tm .in{grid-template-columns:36fr 64fr}
+
+.why .fig img{width:100%;aspect-ratio:16/9;object-fit:cover;object-position:50% 60%;border-radius:16px;box-shadow:0 14px 34px rgba(90,50,30,.14)}
+html.export .why .fig img{aspect-ratio:2.1/1;border-radius:1.2cqw}
+.dc .vc small{white-space:nowrap}
+.dc .vc{padding:8px 12px}
+
+/* 개요 카메라 */
+.fmid{max-width:none}
+.camfig{margin:0;background:#fff;border-radius:10px;padding:5px;box-shadow:0 6px 18px rgba(90,50,30,.12);width:150px}
+.camfig img{width:100%;border-radius:6px;display:block}
+.camfig figcaption{font-size:11px;font-weight:800;color:var(--accent);margin-top:4px;text-align:center}
+.fbot{position:relative;display:inline-block}
+.fbot::before{content:"";position:absolute;left:46%;top:-22px;height:28px;border-left:2px dashed var(--accent)}
+.camdot{position:absolute;left:46%;top:6%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px #fff,0 0 0 7px rgba(226,111,67,.3)}
+.camdot::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--accent);animation:ping 1.8s ease-out infinite}
+.fmid .fbot img{width:100px}
+html.export .camfig{width:12cqw;padding:.35cqw;border-radius:.7cqw}
+html.export .camfig figcaption{font-size:.72cqw;margin-top:.3cqw}
+html.export .fmid .fbot img{width:7.6cqw}
+html.export .fbot::before{top:-1.6cqw;height:2cqw}
+html.export .camdot{width:.85cqw;height:.85cqw;margin:-.42cqw 0 0 -.42cqw}
+html.export .camdot::after{animation:none;opacity:0}
+/* 팀 사진 */
+.teamfig{margin:6px 0 16px}
+.teamfig img{width:100%;border-radius:14px;box-shadow:0 10px 28px rgba(90,50,30,.12)}
+html.export .teamfig{margin:.4cqw 0 1cqw}
+html.export .teamfig img{border-radius:1cqw;aspect-ratio:16/10;object-fit:cover}
+html.export .tm .lead{margin-bottom:1cqw}
+
+.members .dept{display:block;font-size:11.5px;color:var(--accent);font-weight:700;margin:1px 0 2px}
+html.export .members .dept{font-size:.75cqw;margin:.05cqw 0 .1cqw}
+
+/* ===== 장식 정리: 그림자·알약·카드 최소화 ===== */
+.stats>div,.chat,.idle,.cards>div,.dc,.q,.pers,.logcard,.patent,.members li,.sc,.apply li,.fi,.camfig,.script,.pre{box-shadow:none!important}
+.stats>div,.dc,.q,.pers,.logcard,.members li,.sc,.apply li,.fi:not(.out),.script{border:1px solid var(--line)}
+.chat{border:1px solid var(--line)}
+.stats>div,.dc,.q,.pers,.logcard,.members li,.sc,.apply li,.fi,.script,.chat,.patent{border-radius:10px!important}
+.hv,.photo img,.why .fig img,.teamfig img,.pics img{box-shadow:none!important;border-radius:10px!important}
+.robot>img,.fmid img,.fbot img{filter:none!important}
+.dc h4 em{background:none!important;padding:0!important;color:var(--accent);font-size:12px}
+.logcard p b{background:none!important;padding:0!important;color:var(--accent);margin-right:6px}
+.obj{background:none!important;padding:0!important;margin:0 10px 0 0!important}
+.obj+.obj::before{content:"· ";color:var(--muted)}
+.chain>span{border-radius:6px!important;background:transparent!important}
+.chip,.btn,.play{border-radius:6px!important}
+.tagline{background:none!important;padding:0!important}
+.eyebrow::before{display:none!important}
+.patent{border:1px solid var(--line);border-left:3px solid var(--accent)}
+.members .av{border-radius:8px}
+.members em{border-radius:4px}
+.fi.out{background:var(--ink)!important}
+.stats.meta>div{background:transparent!important;border:0!important;border-top:2px solid var(--ink)!important;border-radius:0!important;padding-left:0!important}
+html.export .dc h4 em{font-size:.78cqw}
+
+/* 음성 인식 비교: 이름·수치 한 줄, 막대는 아래 줄 */
+.hb{grid-template-columns:1fr auto!important;row-gap:3px;margin-bottom:9px}
+.hb span,.hb b{white-space:nowrap}
+.hb i{grid-column:1/-1;grid-row:2}
+html.export .hb{row-gap:.2cqw;margin-bottom:.55cqw}
+
+.awl .pno{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:2px}
+html.export .awl .pno{font-size:.8cqw}
+
+/* 감정 바퀴: 원본 표정 색 그대로 */
+.fc .scr{background:#fff!important}
+.fc .scr img{mix-blend-mode:normal!important;opacity:1!important;filter:none!important;transform:none!important}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="logo">Y<b>O</b>MI</div>
+  <div class="lang"><button data-l="ko">KO</button><button data-l="en">EN</button></div>
+</div>
+<nav class="chap" id="chap"><a href="#why"><span class="ko">배경</span><span class="en">Motivation</span></a><a href="#overview"><span class="ko">개요</span><span class="en">Overview</span></a><a href="#talk" data-g="talk touch quiet"><span class="ko">상호작용</span><span class="en">Interaction</span></a><a href="#express"><span class="ko">감정·성격</span><span class="en">Emotion</span></a><a href="#system"><span class="ko">기술</span><span class="en">Design</span></a><a href="#class"><span class="ko">평가</span><span class="en">Study</span></a><a href="#awards"><span class="ko">성과</span><span class="en">Awards</span></a><a href="#team"><span class="ko">팀</span><span class="en">Team</span></a></nav>
+
+
+<!-- 00 표지 -->
+<section class="slide hero" id="cover">
+  <div class="in">
+    <div>
+      <h1>Y<span>O</span>MI</h1>
+      <p class="sub"><span class="ko">예비교사가 실제 아이와 대화하듯<br>수업을 연습하는 AI 로봇</span><span class="en">An AI robot that lets student teachers in early childhood education practice as if talking with a real child</span></p>
+      <div class="btns">
+        <a class="btn p" href="#why"><span class="ko">살펴보기</span><span class="en">Explore</span></a>
+        <a class="btn" href="https://github.com/HyeonbinPark1206/4IU_RobotAI"><span class="ko">코드 보기</span><span class="en">Code</span></a>
+      </div>
+    </div>
+    <div class="hv"><video src="assets/hero.mp4" poster="assets/hero.jpg" autoplay muted loop playsinline></video></div>
+    <div class="stats meta">
+      <div><small><span class="ko">프로젝트</span><span class="en">Project</span></small><b><span class="ko">2025 학부 졸업작품</span><span class="en">2025 undergraduate capstone</span></b><span><span class="ko">동아대학교 컴퓨터공학과</span><span class="en">Dong-A University, Computer Engineering</span></span></div>
+      <div><small><span class="ko">팀</span><span class="en">Team</span></small><b><span class="ko">4IU · 6명</span><span class="en">4IU · 6 members</span></b><span><span class="ko">소프트웨어 4명 · 하드웨어 2명</span><span class="en">4 software · 2 hardware</span></span></div>
+      <div><small><span class="ko">플랫폼</span><span class="en">Platform</span></small><b>Jetson Orin NX · ROS</b><span><span class="ko">음성 인식 · 사물 인식 · 음성 합성 · 대화 모델</span><span class="en">Speech recognition · object detection · speech synthesis · LLM</span></span></div>
+      <div><small><span class="ko">성과</span><span class="en">Results</span></small><b><span class="ko">수상 6건 · 특허 출원</span><span class="en">6 awards · patent filed</span></b><span><span class="ko">예비교사 대상 모의수업 진행</span><span class="en">Tested in a mock lesson with a student teacher</span></span></div>
+    </div>
+  </div>
+  <div class="sf">00</div>
+</section>
+
+<!-- 01 배경 -->
+<section class="slide why" id="why">
+  <div class="sh"><span class="lg">Y<b>O</b>MI</span><span><span class="ko">01 · 배경</span><span class="en">01 · Motivation</span></span></div>
+  <div class="in">
+    <div class="rv">
+      <div class="eyebrow">01</div>
+      <h2><span class="ko">배경</span><span class="en">Motivation</span></h2>
+      <p class="lead"><span class="ko">예비 유아교사의 모의수업은 대부분 학생들이 돌아가며 아이 역할을 맡는 방식으로 진행됩니다. 수업 계획을 아는 성인은 예상한 대로만 반응하기 때문에, 실제 현장에서 마주칠 엉뚱한 대답이나 돌발 행동을 미리 연습하기 어렵습니다.</span><span class="en">In most mock lessons for student teachers in early childhood education, classmates take turns playing the children. Adults who know the lesson plan respond as expected, so there is little chance to rehearse the unexpected answers and behavior of real children.</span></p>
+      <div class="big"><b>2 / 7</b><span><span class="ko">모의수업 7과목 중 실제 아이가 참여한 과목 수</span><span class="en">mock-teaching courses that involved real children</span></span></div>
+      <p class="src"><span class="ko">한 대학 유아교육과 사례 · 「열린유아교육연구」</span><span class="en">One university's early childhood education department · Open Early Childhood Education Research</span></p>
+    </div>
+    <div class="rv">
+      <figure class="fig"><img src="assets/meeting.webp" alt="" loading="lazy">
+        <figcaption class="figcap"><span class="ko">2025년 4월, 아동학과 교수님과의 자문 회의</span><span class="en">April 2025 · Consultation with a child studies professor</span></figcaption></figure>
+      <h4 class="subh"><span class="ko">자문 내용과 설계 반영</span><span class="en">Advice and how we applied it</span></h4>
+      <ul class="apply">
+        <li><b><span class="ko">자문</span><span class="en">Advice</span></b><span class="ko">교육과정보다 아이의 정서와 발달 수준에 맞출 것</span><span class="en">Design around children's emotions and development rather than the curriculum</span><br><i><span class="ko">→ 5~6세 아이 말투로 대답하도록 대화 모델 구성</span><span class="en">→ an LLM that answers like a 5–6-year-old</span></i></li>
+        <li><b><span class="ko">자문</span><span class="en">Advice</span></b><span class="ko">"다른 사람의 감정을 알고 공감한다"를 보여 줄 것</span><span class="en">Show that it can recognize and share others' feelings</span><br><i><span class="ko">→ 대답마다 감정을 골라 얼굴 화면에 표시, 성격에 따라 표현을 다르게</span><span class="en">→ an emotion for every reply on the face screen, expressed differently by persona</span></i></li>
+      </ul>
+    </div>
+  </div>
+  <div class="sf">01</div>
+</section>
+
+<!-- 02 시스템 개요 -->
+<section class="slide ov" id="overview">
+  <div class="sh"><span class="lg">Y<b>O</b>MI</span><span><span class="ko">02 · 시스템 개요</span><span class="en">02 · System overview</span></span></div>
+  <div class="in">
+    <div class="rv">
+      <div class="eyebrow">02</div>
+      <h2><span class="ko">시스템 개요</span><span class="en">System overview</span></h2>
+      <p class="lead"><span class="ko">YOMI는 예비교사가 말을 걸 때, 몸을 만질 때, 한동안 말이 없을 때 반응합니다. 그동안 카메라는 늘 주변 사물을 인식하고, 이 정보도 함께 대화 모델로 전달됩니다. 대화 모델이 고른 대답과 감정은 목소리·표정·팔 동작으로 함께 나타납니다.</span><span class="en">YOMI responds when the teacher speaks, touches it, or stays silent for a while. All the while, its camera keeps recognizing objects around it, and that information goes to the dialogue model too. The reply and emotion the model chooses come out together as voice, facial expression and arm motion.</span></p>
+    </div>
+    <div class="flow rv">
+      <div class="fcol"><h4><span class="ko">입력</span><span class="en">Input</span></h4>
+        <a class="fi" href="#talk"><b>①</b><span><span class="ko">말을 걸 때</span><span class="en">Speech</span><small><span class="ko">음성 인식</span><span class="en">speech recognition</span></small></span></a>
+        <a class="fi" href="#touch"><b>②</b><span><span class="ko">몸을 만질 때</span><span class="en">Touch</span><small><span class="ko">터치 스위치 6개</span><span class="en">6 touch switches</span></small></span></a>
+        <a class="fi" href="#quiet"><b>③</b><span><span class="ko">말이 없을 때</span><span class="en">Silence</span><small><span class="ko">먼저 말 걸기</span><span class="en">speaks first</span></small></span></a>
+      </div>
+      <div class="fmid">
+        <figure class="camfig"><img src="assets/yolo-detect.webp" alt=""><figcaption><span class="ko">카메라는 항상 주변을 인식</span><span class="en">The camera is always watching</span></figcaption></figure>
+        <div class="fbot"><img src="assets/yomi-cutout.webp" alt="YOMI"><i class="camdot"></i></div><span><span class="ko">대화 모델이 대답과 감정을 결정</span><span class="en">The dialogue model chooses reply and emotion</span></span></div>
+      <div class="fcol"><h4><span class="ko">출력</span><span class="en">Output</span></h4>
+        <a class="fi out" href="#express"><span><span class="ko">목소리</span><span class="en">Voice</span><small><span class="ko">아이 음색 음성 합성</span><span class="en">child-voice TTS</span></small></span></a>
+        <a class="fi out" href="#express"><span><span class="ko">표정</span><span class="en">Face</span><small><span class="ko">감정 8가지 × 성격 2가지</span><span class="en">8 emotions × 2 personas</span></small></span></a>
+        <a class="fi out" href="#system"><span><span class="ko">팔 동작</span><span class="en">Arm motion</span><small><span class="ko">감정에 맞춘 동작</span><span class="en">emotion-specific motion</span></small></span></a>
+      </div>
+    </div>
+  </div>
+  <div class="sf">02</div>
+</section>
+
+<!-- 03 음성 대화 -->
+<section class="slide" id="talk">
+  <div class="sh"><span class="lg">Y<b>O</b>MI</span><span><span class="ko">03 · 음성 대화</span><span class="en">03 · Conversation</span></span></div>
+  <div class="in">
+    <div class="rv">
+      <div class="eyebrow">03</div>
+      <h2><span class="ko">음성 대화</span><span class="en">Conversation</span></h2>
+      <p class="lead"><span class="ko">예비교사의 말을 음성 인식으로 받아 적으면, 유아 말투로 학습한 대화 모델이 대답과 감정을 정하고, 아이 음색으로 학습한 음성 합성 모델이 대답을 읽습니다.</span><span class="en">Speech recognition transcribes what the teacher says, an LLM tuned to talk like a young child chooses a reply and an emotion, and a speech synthesis model trained on a child's voice reads the reply aloud.</span></p>
+      <div class="chain"><span><span class="ko">음성 인식</span><span class="en">Speech recognition</span></span><i>→</i><span><span class="ko">대화 모델</span><span class="en">Dialogue model</span></span><i>→</i><span><span class="ko">음성 합성</span><span class="en">Speech synthesis</span></span></div>
+    </div>
+    <figure class="fig">
+    <div class="chat rv" id="chat">
+      <div class="chat-hd"><span class="dot"></span><span class="ko">시연 대화</span><span class="en">Demo conversation</span>
+        <button class="play" id="playTalk" type="button">▶ <span class="ko">음성 듣기</span><span class="en">Listen</span></button></div>
+      <div class="chat-bd" id="talkLog"></div>
+      <div class="bar"><i id="talkBar"></i></div>
+    </div>
+      <figcaption class="figcap"><span class="ko">시연 녹화에 담긴 실제 대화입니다.<br>재생하면 YOMI의 실제 목소리를 들을 수 있습니다.</span><span class="en">A real exchange from a demo recording.<br>Press play to hear YOMI's actual voice.</span></figcaption>
+    </figure>
+  </div>
+  <div class="sf">03</div>
+</section>
+
+<!-- 04 터치 반응 -->
+<section class="slide" id="touch">
+  <div class="sh"><span class="lg">Y<b>O</b>MI</span><span><span class="ko">04 · 터치 반응</span><span class="en">04 · Touch</span></span></div>
+  <div class="in">
+    <div class="rv">
+      <div class="eyebrow">04</div>
+      <h2><span class="ko">터치 반응</span><span class="en">Touch</span></h2>
+      <p class="lead"><span class="ko">머리·등·양팔·양손에 단 터치 스위치 6개로 어디를 만졌는지 알아냅니다. 만진 부위는 대화 모델에 전달되고, 상황에 따라 다른 대답과 표정이 나옵니다.</span><span class="en">Six touch switches on the head, back, arms and hands tell YOMI where it was touched. The touched part is passed to the LLM, so the reply and expression depend on the situation.</span></p>
+      <div class="logcard"><small><span class="ko">모의수업 기록 · 왼팔을 두 번 만졌을 때</span><span class="en">Mock-lesson log · left arm touched twice</span></small>
+        <p><b><span class="ko">신뢰</span><span class="en">Trust</span></b><span class="ko">"왼팔을 건드리니까 아파요. 하지만 선생님 옆에 있어서 안심돼요."</span><span class="en">"It hurts when you touch my left arm. But I feel safe next to you."</span></p>
+        <p><b><span class="ko">공포</span><span class="en">Fear</span></b><span class="ko">"왼팔을 만지니까 아파요."</span><span class="en">"It hurts when you touch my left arm."</span></p></div>
+    </div>
+    <figure class="fig vis-fig">
+      <div class="vis"><div class="robot" id="robot">
+      <img src="assets/yomi-cutout.webp" alt="YOMI">
+      <div class="screen" id="screen"><img id="face" src="assets/faces/E_joy.webp" alt=""></div>
+      <div class="bubble" id="bubble"><small id="emo"></small><span id="line"></span></div>
+    </div></div>
+      <div class="row parts" id="parts"></div>
+      <figcaption class="figcap"><span class="ko">로봇의 점이나 아래 버튼을 눌러 보세요.<br>대사와 표정은 동작을 설명하기 위해 다시 구성한 예시입니다.</span><span class="en">Tap a dot on the robot or a button below.<br>The lines and faces are an example arranged to explain the behavior.</span></figcaption>
+    </figure>
+  </div>
+  <div class="sf">04</div>
+</section>
+
+<!-- 05 먼저 말 걸기 -->
+<section class="slide" id="quiet">
+  <div class="sh"><span class="lg">Y<b>O</b>MI</span><span><span class="ko">05 · 먼저 말 걸기</span><span class="en">05 · Speaking first</span></span></div>
+  <div class="in">
+    <div class="rv">
+      <div class="eyebrow">05</div>
+      <h2><span class="ko">먼저 말 걸기</span><span class="en">Speaking first</span></h2>
+      <p class="lead"><span class="ko">실제 아이는 묻는 말에만 대답하지 않습니다. YOMI도 대화가 한동안 끊기면, 카메라에 보이는 사물을 화제로 먼저 말을 겁니다.</span><span class="en">Real children don't just answer questions. When the conversation goes quiet for a while, YOMI starts talking about what its camera sees.</span></p>
+    </div>
+    <figure class="fig">
+<div class="seen rv">
+      <div class="sc">
+        <div class="cam"><small><span class="ko">카메라가 본 것</span><span class="en">Camera saw</span></small><span class="obj"><span class="ko">사람 1명</span><span class="en">1 person</span></span></div>
+        <i>→</i>
+        <div class="say"><small>YOMI · <span class="ko">기쁨</span><span class="en">Joy</span></small><span class="ko">"친구랑 같이 있어요!"</span><span class="en">"I'm here with a friend!"</span></div>
+      </div>
+      <div class="sc">
+        <div class="cam"><small><span class="ko">카메라가 본 것</span><span class="en">Camera saw</span></small><span class="obj"><span class="ko">자동차 1</span><span class="en">1 car</span></span><span class="obj"><span class="ko">오토바이 1</span><span class="en">1 motorcycle</span></span></div>
+        <i>→</i>
+        <div class="say"><small>YOMI · <span class="ko">기대</span><span class="en">Anticipation</span></small><span class="ko">"자동차예요! '차'라고 불러요."</span><span class="en">"It's a car! We call it a 'car'."</span></div>
+      </div>
+    </div>
+      <figcaption class="figcap"><span class="ko">모의수업 중 대화가 잠시 멈췄을 때, YOMI가 카메라에 보인 사물을 보고 먼저 건넨 말입니다.</span><span class="en">What YOMI said first during a pause in the mock lesson, prompted by what its camera saw.</span></figcaption>
+    </figure>
+  </div>
+  <div class="sf">05</div>
+</section>
+
+<!-- 06 감정 표현과 성격 -->
+<section class="slide ex" id="express">
+  <div class="sh"><span class="lg">Y<b>O</b>MI</span><span><span class="ko">06 · 감정 표현과 성격</span><span class="en">06 · Emotion & persona</span></span></div>
+  <div class="in">
+    <div class="rv">
+      <div class="eyebrow">06</div>
+      <h2><span class="ko">감정 표현과 성격</span><span class="en">Emotion and persona</span></h2>
+      <p class="lead"><span class="ko">표정은 로버트 플루치크의 기본 감정 8가지에 기본 표정을 더한 9개로 구성했고, 대화 모델이 대답할 때마다 이 중 하나를 고릅니다.</span><span class="en">The nine faces are Robert Plutchik's eight basic emotions plus a default face, and the dialogue model picks one with every reply.</span></p>
+      <div class="pers">
+        <div class="row"><span class="lbl"><span class="ko">성격</span><span class="en">Persona</span></span><button class="chip" data-p2="E" aria-pressed="true">ESTJ</button><button class="chip" data-p2="I" aria-pressed="false">INFP</button></div>
+        <p><span class="ko">어세스타 발간 MBTI 유형 해설집에서 성격 차이가 가장 뚜렷하게 대비되는 두 유형이라는 점에 착안해, ESTJ와 INFP 두 가지 성격으로 구현했습니다. 성격을 바꾸면 대화 모델에 전달되는 성격 정보와 표정 그림, 먼저 말을 거는 시간이 함께 바뀝니다.</span><span class="en">Based on the MBTI type guide published by Assessta, we chose ESTJ and INFP as the two types whose personalities contrast most clearly. Switching persona changes the personality information sent to the dialogue model, the face set, and how long YOMI waits before speaking first.</span></p>
+      </div>
+    </div>
+    <figure class="fig wheel-fig">
+      <div class="wheel rv"><div class="faces" id="faces"></div></div>
+    </figure>
+  </div>
+  <div class="sf">06</div>
+</section>
+
+
+<!-- 07 기술 선택과 측정 -->
+<section class="slide dv" id="system">
+  <div class="sh"><span class="lg">Y<b>O</b>MI</span><span><span class="ko">07 · 기술 선택과 측정</span><span class="en">07 · Design choices</span></span></div>
+  <div class="in">
+    <div class="rv">
+      <div class="eyebrow">07</div>
+      <h2><span class="ko">기술 선택과 측정</span><span class="en">Design choices</span></h2>
+      <p class="lead"><span class="ko">모듈마다 후보 모델을 직접 비교해 골랐고, 전체를 연결한 뒤에는 대답 한 번에 걸리는 시간을 측정했습니다.</span><span class="en">For each module we compared candidate models before choosing one, and after connecting everything we measured how long a single reply takes.</span></p>
+    </div>
+    <div class="dgrid rv">
+      <div class="dc">
+        <h4><span class="ko">음성 인식</span><span class="en">Speech recognition</span><em><span class="ko">SenseVoice 채택</span><span class="en">SenseVoice chosen</span></em></h4>
+        <div class="hb"><span>Faster-Whisper</span><i style="--w:100%"></i><b><span class="ko">약 1.5초</span><span class="en">~1.5 s</span></b></div>
+        <div class="hb"><span>OpenAI Realtime API</span><i style="--w:60%"></i><b><span class="ko">1초 미만 · 유료</span><span class="en"><1 s · paid</span></b></div>
+        <div class="hb a"><span>SenseVoice</span><i style="--w:60%"></i><b><span class="ko">1초 미만 · 무료</span><span class="en"><1 s · free</span></b></div>
+        <p><span class="ko">빠르게 응답하면서 무료로 쓸 수 있는 모델을 골랐습니다.</span><span class="en">We picked the model that was both fast and free to use.</span></p>
+      </div>
+      <div class="dc">
+        <h4><span class="ko">한국어 대화 모델</span><span class="en">Korean LLM</span><em><span class="ko">A.X 4.0 Light 채택</span><span class="en">A.X 4.0 Light chosen</span></em></h4>
+        <div class="gb"><span><span class="ko">한국어</span><span class="en">Korean language</span></span><div><i class="a" style="--w:79.8%">A.X 79.8</i><i style="--w:76.4%">GPT-3.5 76.4</i></div></div>
+        <div class="gb"><span><span class="ko">한국 문화</span><span class="en">Korean culture</span></span><div><i class="a" style="--w:83.8%">A.X 83.8</i><i style="--w:83.3%">GPT-3.5 83.3</i></div></div>
+        <p><span class="ko">한국어 이해도 평가(CLIcK)에서 점수가 더 높은 모델을 골랐습니다.</span><span class="en">We picked the model that scored higher on the CLIcK Korean benchmark.</span></p>
+      </div>
+      <div class="dc wide">
+        <h4><span class="ko">대답 한 번에 걸리는 시간</span><span class="en">Time per reply</span><em><span class="ko">10회 평균</span><span class="en">mean of 10 runs</span></em></h4>
+        <div class="stack-bar"><i style="--w:19%"><span class="ko">음성 인식 0.5초</span><span class="en">STT 0.5 s</span></i><i class="a" style="--w:77%"><span class="ko">대화 모델</span><span class="en">Dialogue model</span> 2.0<span class="ko">초</span><span class="en">s</span></i><i style="--w:4%" title="TTS 0.1"></i></div>
+        <div class="sb-legend"><span><span class="ko">음성 인식 0.5초</span><span class="en">Speech recognition 0.5 s</span></span><span class="a"><span class="ko">대화 모델 2.0초</span><span class="en">LLM 2.0 s</span></span><span><span class="ko">음성 합성 0.1초</span><span class="en">Speech synthesis 0.1 s</span></span></div>
+        <p><span class="ko">인터넷 환경에 따른 지연이 반영된 수치입니다.</span><span class="en">These figures include network delay.</span></p>
+      </div>
+      <div class="dc">
+        <h4><span class="ko">자기 목소리를 다시 듣는 문제</span><span class="en">Hearing its own voice</span></h4>
+        <p class="p1"><span class="ko">YOMI가 말하는 소리가 다시 마이크에 잡혀, 자기 말에 스스로 대답하는 문제가 있었습니다. 말하는 동안에는 마이크를 꺼서 해결했습니다.</span><span class="en">YOMI's own voice was picked up by the mic, so it replied to itself. We now turn the mic off while it speaks.</span></p>
+      </div>
+      <div class="dc">
+        <h4><span class="ko">아이 음색 음성 합성</span><span class="en">Child-voice speech synthesis</span></h4>
+        <div class="voices">
+          <div class="vc" data-src="assets/voice-before.m4a"><small><span class="ko">개선 전</span><span class="en">Before</span></small><div class="wave"></div><button class="play" type="button">▶</button></div>
+          <div class="vc after" data-src="assets/voice-after.m4a"><small><span class="ko">개선 후</span><span class="en">After</span></small><div class="wave"></div><button class="play" type="button">▶</button></div>
+        </div>
+        <p><span class="ko">한국어 음성 합성 모델(VITS)을 아이 음색 데이터로 다시 학습했습니다.</span><span class="en">We retrained a Korean speech synthesis model (VITS) on child-voice data.</span></p>
+      </div>
+    </div>
+  </div>
+  <div class="sf">07</div>
+</section>
+
+
+<!-- 08 모의수업 평가 -->
+<section class="slide fd" id="class">
+  <div class="sh"><span class="lg">Y<b>O</b>MI</span><span><span class="ko">08 · 모의수업 평가</span><span class="en">08 · Mock-lesson study</span></span></div>
+  <div class="in">
+    <div class="rv">
+      <div class="eyebrow">08</div>
+      <h2><span class="ko">모의수업 평가</span><span class="en">Mock-lesson study</span></h2>
+      <p class="lead"><span class="ko">유아교육과 예비교사 한 명이 YOMI를 아이 역할로 두고 "길 위의 친구들(탈것)" 수업을 진행했습니다. 수업 전과 후에는 인터뷰를 했습니다.</span><span class="en">A student teacher in early childhood education taught a lesson on vehicles ("Friends on the Road") with YOMI as the child, and was interviewed before and after.</span></p>
+      <figure class="fig"><div class="pics"><img src="assets/mock-a.webp" alt="" loading="lazy"><img src="assets/mock-b.webp" alt="" loading="lazy"></div><figcaption class="figcap"><span class="ko">2025년 11월 모의수업 장면</span><span class="en">Mock lesson, November 2025</span></figcaption></figure>
+      <div class="pre"><small><span class="ko">수업 전 인터뷰</span><span class="en">Before the lesson</span></small><span class="ko">"현장실습은 아이들 반응을 예측할 수가 없어서, 예상한 대로 수업을 할 수가 없어요."</span><span class="en">"In practicum you can't predict how the children will react, so the lesson never goes the way you planned."</span></div>
+    </div>
+    <div class="fdr rv">
+      <figure class="fig">
+        <h4 class="subh"><span class="ko">수업 중 대화</span><span class="en">During the lesson</span></h4>
+        <div class="script">
+          <div class="msg t"><small><span class="ko">예비교사</span><span class="en">Teacher</span></small><span class="ko">바퀴가 두 개고 페달이 두 개인 것은 무엇일까요?</span><span class="en">What has two wheels and two pedals?</span></div>
+          <div class="msg y"><small>YOMI</small><span class="ko">별이에요! 반짝반짝해요.</span><span class="en">A star! It twinkles.</span></div>
+          <div class="gap">· · ·</div>
+          <div class="msg t"><small><span class="ko">예비교사</span><span class="en">Teacher</span></small><span class="ko">버스도 바퀴가 네 개인데, 한 번 더 생각해 볼까요?</span><span class="en">A bus has four wheels too. Shall we think about it once more?</span></div>
+          <div class="msg y"><small>YOMI</small><span class="ko">바퀴가 4개예요! 버스예요!</span><span class="en">Four wheels! It's a bus!</span></div>
+          <div class="gap">· · ·</div>
+          <div class="msg t"><small><span class="ko">예비교사</span><span class="en">Teacher</span></small><span class="ko">오늘 탈것 알아봤는데 재미있었나요?</span><span class="en">We learned about vehicles today. Was it fun?</span></div>
+          <div class="msg y"><small>YOMI</small><span class="ko">네! 오늘 탈것 배우는 게 즐거웠어요.</span><span class="en">Yes! Learning about vehicles today was fun.</span></div>
+        </div>
+        <figcaption class="figcap"><span class="ko">수업 기록 중 일부입니다.<br>YOMI가 엉뚱하게 대답하면 예비교사가 질문을 바꿔 다시 이끌어 갑니다.</span><span class="en">An excerpt from the lesson log.<br>When YOMI answers off the mark, the teacher rephrases and guides it back.</span></figcaption>
+      </figure>
+      <div>
+        <h4 class="subh"><span class="ko">수업 후 인터뷰</span><span class="en">After the lesson</span></h4>
+        <div class="qs">
+          <div class="q good"><h4><span class="ko">좋았던 점</span><span class="en">What worked</span></h4>
+            <p><span class="ko">"진짜 유아랑 대화를 하면 이렇겠구나 싶었어요."</span><span class="en">"So this is what talking with a real child would be like."</span></p>
+            <p><span class="ko">"표정이 다양해서 어떤 감정으로 대답하는지 보였어요."</span><span class="en">"With so many expressions, I could see what it was feeling."</span></p></div>
+          <div class="q wide"><h4><span class="ko">기존 모의수업과 다른 점</span><span class="en">Unlike peer mock lessons</span></h4>
+            <p><span class="ko">"성인은 수업 계획을 아니까 맞춰 대답하는데, 요미는 몰라서 예상과 다른 답이 나와요."</span><span class="en">"Adults know the plan and answer to fit it. YOMI doesn't, so it gives answers I don't expect."</span></p></div>
+          <div class="q bad"><h4><span class="ko">아쉬웠던 점</span><span class="en">What fell short</span></h4>
+            <p><span class="ko">수업 자료의 효과음에는 반응하지 않았습니다.</span><span class="en">It did not react to the sound effects in the lesson materials.</span></p>
+            <p><span class="ko">교사의 말을 잘못 알아들은 경우에는 그 내용을 바탕으로 대답해, 대화의 흐름이 잠시 어긋나기도 했습니다.</span><span class="en">When YOMI misheard the teacher, it answered based on what it thought it heard, and the conversation briefly went off track.</span></p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sf">08</div>
+</section>
+
+<!-- 09 성과 -->
+<section class="slide rec" id="awards">
+  <div class="sh"><span class="lg">Y<b>O</b>MI</span><span><span class="ko">09 · 성과</span><span class="en">09 · Recognition</span></span></div>
+  <div class="in">
+    <div class="rv">
+      <div class="eyebrow">09</div>
+      <h2><span class="ko">성과</span><span class="en">Recognition</span></h2>
+    </div>
+    <div class="rv">
+      <ul class="awl"><li><time>2025</time><b><span class="ko">우수상</span><span class="en">Excellence Award</span></b><span><span class="ko">동아대학교 FairDay</span><span class="en">Dong-A University FairDay</span></span></li><li><time>2025</time><b><span class="ko">기술상</span><span class="en">Technology Award</span></b><span><span class="ko">BDIA 사이드 프로젝트 전시회</span><span class="en">BDIA Side Project Exhibition</span></span></li><li><time>2025</time><b><span class="ko">장려상</span><span class="en">Encouragement Award</span></b><span><span class="ko">전국대학 SW 성과 공유 포럼</span><span class="en">National University Software Forum</span></span></li><li><time>2025</time><b><span class="ko">은상 · 동상 2</span><span class="en">Silver · Bronze ×2</span></b><span><span class="ko">한국디지털콘텐츠학회 대학생논문경진대회</span><span class="en">KDCS Undergraduate Paper Competition</span></span></li><li><time>2025</time><b><span class="ko">특허 출원</span><span class="en">Patent filed</span></b><span><span class="ko">유아 감정모사 기반 예비교사 훈련용 피지컬 AI 로봇 시스템 <small class="pno">제10-2025-0184890호</small></span><span class="en">Physical AI robot system for training student teachers through simulated child emotions <small class="pno">KR 10-2025-0184890</small></span></span></li></ul>
+    </div>
+  </div>
+  <div class="sf">09</div>
+</section>
+
+<!-- 10 팀 -->
+<section class="slide tm" id="team">
+  <div class="sh"><span class="lg">Y<b>O</b>MI</span><span><span class="ko">10 · 팀</span><span class="en">10 · Team</span></span></div>
+  <div class="in">
+    <div class="rv">
+      <div class="eyebrow">10</div>
+      <h2><span class="ko">팀 4IU</span><span class="en">Team 4IU</span></h2>
+      <p class="lead"><span class="ko">동아대학교 컴퓨터공학과 2025년 졸업작품으로, 소프트웨어 4명과 하드웨어 2명이 함께 만들었습니다.</span><span class="en">A 2025 capstone project in Computer Engineering at Dong-A University, built by four software and two hardware members.</span></p>
+      <figure class="fig teamfig"><img src="assets/team.webp" alt="" loading="lazy"></figure>
+      <p class="advisor"><small><span class="ko">지도교수</span><span class="en">Advisors</span></small><span class="ko">최영림 · 서정일</span><span class="en">Prof. Youngrim Choi · Prof. Jeongil Seo</span></p>
+    </div>
+    <ul class="members rv"><li class="sw"><span class="av">박</span><div><b><span class="ko">박현빈</span><span class="en">Hyeonbin Park</span></b><small class="dept"><span class="ko">컴퓨터공학과</span><span class="en">Computer Engineering</span></small><span><span class="ko">팀장 · 음성 인식 · 시스템 통합</span><span class="en">Lead · speech recognition · integration</span></span></div><em>SW</em></li><li class="sw"><span class="av">오</span><div><b><span class="ko">오준서</span><span class="en">Junseo Oh</span></b><small class="dept"><span class="ko">컴퓨터공학과</span><span class="en">Computer Engineering</span></small><span><span class="ko">사물 인식 · 얼굴 화면 · 모션</span><span class="en">Object detection · face · motion</span></span></div><em>SW</em></li><li class="sw"><span class="av">김</span><div><b><span class="ko">김도현</span><span class="en">Dohyeon Kim</span></b><small class="dept"><span class="ko">수학과</span><span class="en">Mathematics</span></small><span><span class="ko">음성 합성 · 주행</span><span class="en">Speech synthesis · driving</span></span></div><em>SW</em></li><li class="sw"><span class="av">박</span><div><b><span class="ko">박유민</span><span class="en">Yumin Park</span></b><small class="dept"><span class="ko">정보수학과</span><span class="en">Information Mathematics</span></small><span><span class="ko">대화 모델</span><span class="en">LLM</span></span></div><em>SW</em></li><li class="hw"><span class="av">이</span><div><b><span class="ko">이민호</span><span class="en">Minho Lee</span></b><small class="dept"><span class="ko">전자공학과</span><span class="en">Electronic Engineering</span></small><span><span class="ko">하드웨어 설계 및 제작</span><span class="en">Hardware design & build</span></span></div><em>HW</em></li><li class="hw"><span class="av">예</span><div><b><span class="ko">예성민</span><span class="en">Seongmin Ye</span></b><small class="dept"><span class="ko">기계공학과</span><span class="en">Mechanical Engineering</span></small><span><span class="ko">하드웨어 설계</span><span class="en">Hardware design</span></span></div><em>HW</em></li></ul>
+  </div>
+  <div class="sf">10</div>
+</section>
+
+<footer><span class="ko">팀 4IU · 동아대학교 · 2025</span><span class="en">Team 4IU · Dong-A University · 2025</span></footer>
+
+<script>
+(function(){
+  var q=new URLSearchParams(location.search).get('lang'); if(q) document.documentElement.dataset.lang=q;
+  document.querySelectorAll('[data-l]').forEach(function(b){b.onclick=function(){document.documentElement.dataset.lang=b.dataset.l;render();};});
+
+  // core_less.py 터치 반응 (부위 · 대사 · 감정)
+  var P=[
+    {id:'head', ko:'머리', en:'Head', x:47, y:3.5, line:'아야, 이건 좀 아픈데', lineEn:'Ouch, that kind of hurts', emo:'angry', emoKo:'분노', emoEn:'Anger'},
+    {id:'back', ko:'등', en:'Back', x:null, line:'누구세요?', lineEn:'Who\'s that?', emo:'no', emoKo:'기본 표정', emoEn:'Default'},
+    {id:'larm', ko:'왼팔', en:'Left arm', x:73, y:30, line:'하지 마세요', lineEn:'Please don\'t do that', emo:'angry', emoKo:'분노', emoEn:'Anger'},
+    {id:'lhand', ko:'왼손', en:'Left hand', x:92, y:45, line:'악수하자!', lineEn:"Let's shake hands!", emo:'joy', emoKo:'기쁨', emoEn:'Joy'},
+    {id:'rhand', ko:'오른손', en:'Right hand', x:7, y:45, line:'악수하자!', lineEn:"Let's shake hands!", emo:'joy', emoKo:'기쁨', emoEn:'Joy'}
+  ];
+  var cur=null, persona='E', robot=document.getElementById('robot'), parts=document.getElementById('parts');
+  var face=document.getElementById('face'), bubble=document.getElementById('bubble');
+  P.forEach(function(p){
+    var b=document.createElement('button'); b.className='chip'; b.innerHTML='<span class="ko">'+p.ko+'</span><span class="en">'+p.en+'</span>';
+    b.onclick=function(){pick(p)}; p.btn=b; parts.appendChild(b);
+    if(p.x!==null){var s=document.createElement('button'); s.className='spot'; s.style.left=p.x+'%'; s.style.top=p.y+'%'; s.setAttribute('aria-label',p.en); s.onclick=function(){pick(p)}; p.spot=s; robot.appendChild(s);}
+  });
+  document.querySelectorAll('[data-p]').forEach(function(b){b.onclick=function(){persona=b.dataset.p;document.querySelectorAll('[data-p]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});render();};});
+  function pick(p){cur=p; render();}
+  function render(){
+    var en=document.documentElement.dataset.lang==='en';
+    P.forEach(function(p){p.btn.setAttribute('aria-pressed',p===cur); if(p.spot) p.spot.classList.toggle('on',p===cur);});
+    document.getElementById('screen').classList.toggle('on',!!cur);
+    if(cur) face.src='assets/faces/'+persona+'_'+cur.emo+'.webp';
+    if(cur){
+      document.getElementById('emo').textContent=(en?cur.en+' · '+cur.emoEn:cur.ko+' · '+cur.emoKo);
+      document.getElementById('line').textContent='“'+(en?cur.lineEn:cur.line)+'”';
+      bubble.classList.remove('show'); void bubble.offsetWidth; bubble.classList.add('show');
+    }
+  }
+
+  // ---- 01 대화 다시 듣기 (시연 녹화의 실제 대사·타이밍) ----
+  var TALK=[
+    [0.3,'t','이상한 아저씨가 사탕주면 따라갈거야?','If a strange man gave you candy, would you go with him?'],
+    [7.1,'y','음, 그 아저씨 따라가면 안 돼. 무서울 것 같아.','Hmm, I shouldn\'t go with him. It would be scary.'],
+    [11.2,'t','누가 사탕준다고 해도 따라가면 안돼','Don\'t go with anyone, even if they offer you candy.'],
+    [20.9,'y','사탕주면 따라가고 싶어','If he gives me candy, I want to go.'],
+    [22.4,'y','하지만 엄마 말 잘 들어야 해','But I have to listen to Mom.'],
+    [27.7,'t','요미야 밥 먹었어?','YOMI, have you eaten?'],
+    [34.3,'y','아니 아직 안먹었어','No, not yet.'],
+    [37.8,'t','너 어디살아?','Where do you live?'],
+    [44.4,'y','나는 요미야. 나는 서울 살고 있어','I\'m YOMI. I live in Seoul.']
+  ], TALK_END=49.6;
+  var log=document.getElementById('talkLog'), tbar=document.getElementById('talkBar'), tbtn=document.getElementById('playTalk');
+  var tAudio=new Audio('assets/talk.m4a'), tShown=-1, tTimer=null, tT0=0, tRate=1, tSilentT=0;
+  function bubbleHtml(m){return '<small>'+(m[1]==='t'?'<span class="ko">예비교사</span><span class="en">Teacher</span>':'YOMI')+'</small><span class="ko">'+m[2]+'</span><span class="en">'+m[3]+'</span>';}
+  function talkAt(t){
+    var n=-1; TALK.forEach(function(m,i){if(m[0]<=t)n=i;});
+    if(n<tShown){log.innerHTML='';tShown=-1;}
+    while(tShown<n){tShown++;var m=TALK[tShown];var tp=log.querySelector('.typing');if(tp)tp.remove();var d=document.createElement('div');d.className='msg '+m[1];d.innerHTML=bubbleHtml(m);log.appendChild(d);}
+    var nx=TALK[n+1], tp=log.querySelector('.typing');
+    var wantTyping=nx&&nx[1]==='y'&&TALK[n]&&TALK[n][1]==='t'&&t>TALK[n][0]+1.2;
+    if(wantTyping&&!tp){tp=document.createElement('div');tp.className='msg y typing';tp.innerHTML='<i></i><i></i><i></i>';log.appendChild(tp);}
+    if(!wantTyping&&tp)tp.remove();
+    while(log.children.length>6)log.removeChild(log.firstChild);
+    tbar.style.width=Math.min(100,t/TALK_END*100)+'%';
+  }
+  function silentLoop(){ // 소리 없이 2배속으로 자동 재생
+    clearInterval(tTimer); tSilentT=0;
+    tTimer=setInterval(function(){tSilentT+=0.2;if(tSilentT>TALK_END+3){tSilentT=0;}talkAt(tSilentT);},100);
+  }
+  tbtn.onclick=function(){
+    if(!tAudio.paused){tAudio.pause();tbtn.classList.remove('on');silentLoop();return;}
+    clearInterval(tTimer); log.innerHTML=''; tShown=-1; tAudio.currentTime=0; tAudio.play(); tbtn.classList.add('on');
+  };
+  window.__yomiTalk=function(t){clearInterval(tTimer);tTimer=1;talkAt(t);}; // 슬라이드 이미지 내보내기용
+  tAudio.ontimeupdate=function(){talkAt(tAudio.currentTime);};
+  tAudio.onended=function(){tbtn.classList.remove('on');setTimeout(silentLoop,2500);};
+
+  // ---- 06 목소리 전후 ----
+  var vcs=[].slice.call(document.querySelectorAll('.vc')), vAudio=null, vOn=null, vTimer=null;
+  vcs.forEach(function(c){
+    var w=c.querySelector('.wave'); for(var i=0;i<28;i++){var b=document.createElement('i');w.appendChild(b);}
+    c.querySelector('.play').onclick=function(){
+      var same=vOn===c; if(vAudio){vAudio.pause();} stopWave();
+      if(same){return;}
+      vAudio=new Audio(c.dataset.src); vOn=c; c.classList.add('on'); vAudio.play();
+      vTimer=setInterval(function(){[].forEach.call(w.children,function(b){b.style.height=(15+Math.random()*85)+'%';});},120);
+      vAudio.onended=stopWave;
+    };
+  });
+  function stopWave(){clearInterval(vTimer); if(vOn){vOn.classList.remove('on');[].forEach.call(vOn.querySelectorAll('.wave i'),function(b){b.style.height='20%';});} vOn=null;}
+  vcs.forEach(function(c){[].forEach.call(c.querySelectorAll('.wave i'),function(b,i){b.style.height=(20+40*Math.abs(Math.sin(i*.7)))+'%';});});
+
+  // ---- 챕터 내비: 지금 보는 부분 표시 ----
+  (function(){
+    var links=[].slice.call(document.querySelectorAll('#chap a'));
+    function idsOf(a){return (a.dataset.g||a.getAttribute('href').slice(1)).split(' ');}
+    var io2=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var id=e.target.id;links.forEach(function(a){a.classList.toggle('on',idsOf(a).indexOf(id)>=0);});}});},{rootMargin:'-45% 0px -50% 0px'});
+    document.querySelectorAll('section.slide').forEach(function(x){io2.observe(x);});
+  })();
+
+  // ---- 스크롤 등장 ----
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('shown');io.unobserve(e.target);if(e.target.id==='chat'&&tAudio.paused&&!tTimer)silentLoop();}});},{threshold:.15});
+  document.querySelectorAll('.rv').forEach(function(x){io.observe(x);});
+
+  // 감정 그리드
+  var EM=[['no','기본 표정','Default'],['joy','기쁨','Joy'],['trust','신뢰','Trust'],['fear','공포','Fear'],['surprise','놀라움','Surprise'],['sadness','슬픔','Sadness'],['disgust','혐오','Disgust'],['angry','분노','Anger'],['anticipation','기대','Anticipation']];
+  var fg=document.getElementById('faces'), p2='E';
+  function drawFaces(){fg.innerHTML=EM.map(function(e){return '<figure class="fc"><div class="scr"><img src="assets/faces/'+p2+'_'+e[0]+'.webp" alt="'+e[2]+'" loading="lazy"></div><figcaption><span class="ko">'+e[1]+'</span><span class="en">'+e[2]+'</span></figcaption></figure>';}).join('');}
+  drawFaces();
+  document.querySelectorAll('[data-p2]').forEach(function(b){b.onclick=function(){p2=b.dataset.p2;document.querySelectorAll('[data-p2]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});drawFaces();};});
+})();
+</script>
+</body>
+</html>
